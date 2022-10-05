@@ -1,4 +1,6 @@
 ﻿using FTree.Configuration;
+using FTree.Models;
+using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
 
 namespace FTree.Services.MongoService
@@ -10,6 +12,7 @@ namespace FTree.Services.MongoService
         private readonly string _databaseName;
         private readonly string _collectionName;
         private readonly MongoClient _client;
+        private readonly BsonClassMap _classMap;
         
         public MongoService(AppConfiguration config)
         {
@@ -17,6 +20,10 @@ namespace FTree.Services.MongoService
             _client = new MongoClient(_connectionString);
             _databaseName = config.MongoConfig.DatabaseName;
             _collectionName = config.MongoConfig.DatabaseName;
+            _classMap = BsonClassMap.RegisterClassMap<TreeNode>(tr =>
+            {
+                tr.MapMember(c => c.FamilyMember);
+            });
         }
 
         public bool CheckConnection()
