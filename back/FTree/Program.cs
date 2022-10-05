@@ -10,12 +10,10 @@ DotNetEnv.Env.Load();
 var configuration = new AppConfiguration();
 
 builder.Configuration.AddJsonFile(configFilePath, true, true);
-builder.Configuration.AddEnvironmentVariables("FTREE");
+builder.Configuration.AddEnvironmentVariables("FTREE_");
 builder.Configuration.Bind(configuration);
 
 builder.Services.AddSingleton(configuration);
-
-
 
 // Add services to the container.
 builder.Services.AddSingleton<MongoService>();
@@ -37,10 +35,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-/*if (string.IsNullOrEmpty(mongoConfig.ConnectionString))
+if (string.IsNullOrEmpty(configuration.MongoConfig.ConnectionString))
 {
     Console.WriteLine("Mongo connection string is not configured. Exiting ...");
     return;
-}*/
+}
 
 app.Run();
