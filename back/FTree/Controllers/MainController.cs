@@ -1,3 +1,5 @@
+using FTree.Controllers.Models;
+using FTree.Models;
 using FTree.Services.MongoService;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +34,22 @@ namespace FTree.Controllers
             catch(Exception ex)
             {
                 _logger.LogError($"Err:{ex.Message}");
+            }
+
+            return Ok();
+        }
+
+        [HttpPost("newNode")]
+        public async Task<IActionResult> InsertNodeToDb([FromBody] TreeNode request)
+        {
+            try
+            {
+                await _mongoService.InsertDocument(request);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
             }
 
             return Ok();
