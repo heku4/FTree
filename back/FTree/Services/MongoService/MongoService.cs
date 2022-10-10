@@ -23,6 +23,8 @@ namespace FTree.Services.MongoService
             _classMap = BsonClassMap.RegisterClassMap<TreeNode>(tr =>
             {
                 tr.MapMember(c => c.FamilyMember);
+                tr.MapMember(c => c.Children);
+                tr.MapMember(c => c.Parents);
             });
         }
 
@@ -32,10 +34,10 @@ namespace FTree.Services.MongoService
             return conStatus != null;
         }
 
-        public async Task InsertDocument<TreeNdoe>(TreeNdoe document)
+        public async Task InsertDocument<T>(T document)
         {
             var db = _client.GetDatabase(_databaseName);
-            var collection = db.GetCollection<TreeNdoe>(_collectionName);
+            var collection = db.GetCollection<T>(_collectionName);
             await collection.InsertOneAsync(document);
         }
     }
