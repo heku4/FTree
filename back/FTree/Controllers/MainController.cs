@@ -1,50 +1,32 @@
 using FTree.Controllers.Models;
 using FTree.Models;
-using FTree.Services.MongoService;
+using FTree.Services.TreeNodeRepository;
+using FTree.Services.TreeNodeRepository.MongoService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FTree.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("node")]
     public class MainController : ControllerBase
     {
 
         private readonly ILogger<MainController> _logger;
-        private readonly MongoService _mongoService;
+        private readonly ITreeNodeRepository _repository;
 
         public MainController(ILogger<MainController> logger,
-            MongoService mongoService)
+            ITreeNodeRepository repository)
         {
             _logger = logger;
-            _mongoService = mongoService;
+            _repository = repository;
         }
 
-        [HttpGet]
-        public IActionResult Get()
+        [HttpPost]
+        public async Task<IActionResult> CreateNode([FromBody] TreeNode request)
         {
             try
             {
-                var conStatus = _mongoService.CheckConnection();
-                if (!conStatus)
-                {
-                    return NotFound();
-                }
-            }
-            catch(Exception ex)
-            {
-                _logger.LogError($"Err:{ex.Message}");
-            }
-
-            return Ok();
-        }
-
-        [HttpPost("newNode")]
-        public async Task<IActionResult> InsertNodeToDb([FromBody] TreeNode request)
-        {
-            try
-            {
-                await _mongoService.InsertDocument(request);
+                await _repository.WriteToRepository(request);
             }
             catch (Exception ex)
             {
@@ -54,5 +36,40 @@ namespace FTree.Controllers
 
             return Ok();
         }
+
+        [HttpGet("/{id}")]
+        public async Task<IActionResult> GetNode(int id)
+        {
+            TreeNode treeNode;
+            try
+            {
+               treeNode = await _repository.GetFromRepository(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
+            return Ok(treeNode);
+        }
+
+        [HttpDelete("/{id}")]
+        public async Task<IActionResult> UpdateNode(int id)
+        {
+            try
+            {
+                await _repository.DeleteFromRepository(id);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return BadRequest(ex.Message);
+            }
+
+            return Ok();
+        }
+
+        
     }
 }
