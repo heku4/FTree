@@ -7,7 +7,10 @@ namespace FTree.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
+
+        [BsonRepresentation(BsonType.Int32)]
+        public int FamilyId { get; set; }
 
         [BsonRepresentation(BsonType.Document)]
         public FamilyMember FamilyMember { get; set; } = new FamilyMember();
