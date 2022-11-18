@@ -2,6 +2,7 @@ using FTree.Controllers.Models;
 using FTree.Models;
 using FTree.Services.TreeNodeRepository;
 using FTree.Services.TreeNodeRepository.MongoService;
+using FTree.Services.TreeNodeSerivce;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FTree.Controllers
@@ -12,13 +13,13 @@ namespace FTree.Controllers
     {
 
         private readonly ILogger<MainController> _logger;
-        private readonly ITreeNodeRepository _repository;
+        private readonly ITreeNodeService _treeNodeService;
 
         public MainController(ILogger<MainController> logger,
-            ITreeNodeRepository repository)
+            ITreeNodeService treeNodeService)
         {
             _logger = logger;
-            _repository = repository;
+            _treeNodeService = treeNodeService;
         }
 
         [HttpPost]
@@ -26,7 +27,7 @@ namespace FTree.Controllers
         {
             try
             {
-                await _repository.WriteToRepository(request);
+                await _treeNodeService.CreateNodeAsync(request);
             }
             catch (Exception ex)
             {
@@ -37,13 +38,13 @@ namespace FTree.Controllers
             return Ok();
         }
 
-        [HttpGet("/{id}")]
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetNode(int id)
         {
             TreeNode treeNode;
             try
             {
-               treeNode = await _repository.GetFromRepository(id);
+               treeNode = await _treeNodeService.GetNodeAsync(id);
             }
             catch (Exception ex)
             {
@@ -54,12 +55,12 @@ namespace FTree.Controllers
             return Ok(treeNode);
         }
 
-        [HttpDelete("/{id}")]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> UpdateNode(int id)
         {
             try
             {
-                await _repository.DeleteFromRepository(id);
+                await _treeNodeService.DeleteNodeAsync(id);
             }
             catch (Exception ex)
             {
@@ -68,8 +69,6 @@ namespace FTree.Controllers
             }
 
             return Ok();
-        }
-
-        
+        }        
     }
 }

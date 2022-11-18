@@ -1,6 +1,7 @@
 using FTree.Configuration;
 using FTree.Services.TreeNodeRepository;
 using FTree.Services.TreeNodeRepository.MongoService;
+using FTree.Services.TreeNodeSerivce;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +19,7 @@ builder.Services.AddSingleton(configuration);
 
 // Add services to the container.
 builder.Services.AddSingleton<ITreeNodeRepository, MongoService>();
+builder.Services.AddSingleton<ITreeNodeService, TreeNodeSerivce>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
